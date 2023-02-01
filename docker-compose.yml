@@ -1,0 +1,16 @@
+version: '3'
+services:
+  my-db:
+    image: mysql
+    platform: linux/x86_64
+    # volumes:
+    #   - ./logs:/var/log/mysql
+    #   - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    environment:
+      - MYSQL_DATABASE=${DB_NAME:-homestead}
+      - MYSQL_USER=${DB_USER:-homestead}
+      - MYSQL_PASSWORD=${DB_PASS:-secret}
+      - MYSQL_ROOT_PASSWORD=${DB_PASS:-secret}
+      - TZ=${TZ:-Asia/Tokyo}
+    ports:
+      - ${DB_PORT:-13308}:3306

@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+
+  role UserRole @default(USER)
+
+  apiKeys  ApiKey[]  @relation("userApiKey")
+  sessions Session[] @relation("userSession")
+
+  @@index([email])
+}
+
+model ApiKey {
+  createdAt            DateTime @default(now())
+  description          String?
+  id                   Int      @id @default(autoincrement())
+  ipRestrictions       Json?
+  apiKey               String   @unique
+  name                 String?
+  groupId              Int?
+  referrerRestrictions Json?
+  scopes               Json?
+  updatedAt            DateTime @updatedAt
+  userId               Int?
+  user                 User?    @relation("userApiKey", fields: [userId], references: [id])
+
+  @@index([groupId])
+  @@index([userId])
+}
+
+model Session {
+  createdAt       DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  ipAddress       String
+  token           String
+  updatedAt       DateTime @updatedAt
+  userAgent       String?
+  city            String?
+  region          String?
+  timezone        String?
+  countryCode     String?
+  browser         String?
+  operatingSystem String?
+  userId          Int
+  user            User     @relation("userSession", fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+enum UserRole {
+  SUDO
+  MANAGER
+  ADMIN
+  USER
+}
